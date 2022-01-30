@@ -1,3 +1,4 @@
+#!/bin/bash
 pip install virtualenvwrapper
 WORKON_HOME=~/.virtualenvs
 mkdir $WORKON_HOME
