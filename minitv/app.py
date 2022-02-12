@@ -1,5 +1,6 @@
 import tkinter as tk
 
+import yaml
 from pynput import keyboard
 
 from minitv.button_grid import ButtonGrid
@@ -20,9 +21,14 @@ def on_release(key):
 
 
 def main():
+    # main window
     window = tk.Tk()
     window.attributes("-fullscreen", True)
-    ButtonGrid(window, window.winfo_screenwidth(), window.winfo_screenheight())
+
+    # setup button grid
+    with open('buttons.yml', 'r') as fid:
+        config = yaml.safe_load(fid)
+    ButtonGrid(window, window.winfo_screenwidth(), window.winfo_screenheight(), config)
 
     # start keyboard listener thread
     listener = keyboard.Listener(on_press=on_press,

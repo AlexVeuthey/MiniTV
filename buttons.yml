@@ -1,0 +1,23 @@
+arte:
+  logo_path: arte-logo.png
+  button_type: website
+  url: https://boutique.arte.tv
+
+youtube:
+  logo_path: youtube-logo.png
+  button_type: website
+  url: https://youtube.com
+
+www:
+  logo_path: www-logo.png
+  button_type: website
+  url: https://google.com
+
+mycloud:
+  logo_path: mycloud-logo.png
+  button_type: website
+  url: https://home.mycloud.com
+
+filemanager:
+  logo_path: files-manager-logo.png
+  button_type: filemanager

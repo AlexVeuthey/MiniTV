@@ -1,4 +1,4 @@
-import threading
+import abc
 import tkinter as tk
 
 from PIL import ImageTk
@@ -7,7 +7,7 @@ from minitv.event_manager import manager
 from minitv.utils import open_nothover_image, open_resize_image
 
 
-class ImageButton:
+class ImageButton(abc.ABC):
 
     def __init__(self, canvas, filename, size, position):
         self.imgNormal = ImageTk.PhotoImage(open_nothover_image(filename, size))
@@ -28,27 +28,6 @@ class ImageButton:
     def on_leave(self, event):
         self.canvas.itemconfig(self.image, image=self.imgNormal)
 
+    @abc.abstractmethod
     def on_click(self, event):
-
-        def quit():
-            print("Quitting driver")
-            if self.driver is not None:
-                self.driver.quit()
-                manager.remove_handler('quit', quit)
-
-        manager.emit('show_spinner')
-
-        def start_youtube():
-            from selenium import webdriver
-            opt = webdriver.ChromeOptions()
-            opt.add_argument('--start-fullscreen')
-            opt.add_argument('--user-data-dir=~/.chrome/profile/')
-            opt.add_experimental_option('excludeSwitches', ['enable-automation'])
-            driver = webdriver.Chrome(chrome_options=opt)
-            self.driver = driver
-            manager.add_handler('quit', quit)
-            manager.emit('hide_spinner')
-            driver.get('https://www.youtube.com')
-
-        x = threading.Thread(target=start_youtube)
-        x.start()
+        pass
