@@ -3,8 +3,9 @@ from pathlib import Path
 
 from PIL import Image, ImageTk
 
-from minitv.buttons import chrome_button, file_manager_button
+from minitv.buttons import chrome_button, video_button
 from minitv.spinner import Spinner
+from minitv.file_manager import find_video_files
 
 
 class ButtonGrid(tk.Canvas):
@@ -27,11 +28,17 @@ class ButtonGrid(tk.Canvas):
             params = buttons_config[button_name]
             self.setup_button(params, button_size, i // columns, i % columns)
 
+        for j, video_path in enumerate(find_video_files()):
+            self.setup_button({
+                'button_type': 'video',
+                'videopath': video_path
+            }, button_size, (i + j) // columns, (i + j) % columns)
+
     def setup_button(self, params, size, row, column):
         position = (self.offset_x + size[0]*column, 50+size[1]*row)
-        logo_path = self.logo_folder / params['logo_path']
         if params['button_type'] == 'website':
-            chrome_button.ChromeButton(params['url'], self, logo_path, size, position)
+            chrome_button.ChromeButton(params['url'], self, self.logo_folder / params['logo_path'], size, position)
+        elif params['button_type'] == 'video':
+            video_button.VideoButton(params['videopath'], self, size, position)
         else:
             print(f"Type {params['button_type']} not supported at the moment")
-            file_manager_button.FileManagerButton(self, logo_path, size, position)

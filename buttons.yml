@@ -17,7 +17,3 @@ mycloud:
   logo_path: mycloud-logo.png
   button_type: website
   url: https://home.mycloud.com
-
-filemanager:
-  logo_path: files-manager-logo.png
-  button_type: filemanager
