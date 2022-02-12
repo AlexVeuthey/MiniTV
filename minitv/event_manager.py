@@ -14,6 +14,7 @@ class EventManager:
 
     def emit(self, event_name):
         for handler in self._handlers[event_name]:
+            print(f"Emitting {event_name}")
             handler()
 
 
