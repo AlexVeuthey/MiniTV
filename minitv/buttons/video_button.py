@@ -1,5 +1,7 @@
 import subprocess
+import threading
 from pathlib import Path
+from time import sleep
 
 from minitv.event_manager import manager
 from minitv.image_button import ImageButton
@@ -22,5 +24,13 @@ class VideoButton(ImageButton):
                 self.process.kill()
                 manager.remove_handler('quit', quit)
 
-        self.process = subprocess.Popen(['vlc', f'{self.videopath}', '--fullscreen'])
-        manager.add_handler('quit', quit)
+        manager.emit('show_spinner')
+
+        def start_video():
+            self.process = subprocess.Popen(['vlc', f'{self.videopath}', '--fullscreen'])
+            manager.add_handler('quit', quit)
+            sleep(1)
+            manager.emit('hide_spinner')
+
+        x = threading.Thread(target=start_video)
+        x.start()

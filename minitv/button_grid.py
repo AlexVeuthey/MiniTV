@@ -32,7 +32,7 @@ class ButtonGrid(tk.Canvas):
             self.setup_button({
                 'button_type': 'video',
                 'videopath': video_path
-            }, button_size, (i + j) // columns, (i + j) % columns)
+            }, button_size, (i + j + 1) // columns, (i + j + 1) % columns)
 
     def setup_button(self, params, size, row, column):
         position = (self.offset_x + size[0]*column, 50+size[1]*row)
