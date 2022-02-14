@@ -12,10 +12,11 @@ class EventManager:
         self._handlers[event_name].remove(handler)
         print(f"Removed handler {handler}")
 
-    def emit(self, event_name):
-        for handler in self._handlers[event_name]:
-            print(f"Emitting {event_name}")
-            handler()
+    def emit(self, event_name, *args):
+        if event_name in self._handlers:
+            print(f"Emitting {event_name} ({args})")
+            for handler in self._handlers[event_name]:
+                handler(*args)
 
 
 manager = EventManager()

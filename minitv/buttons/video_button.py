@@ -9,13 +9,17 @@ from minitv.image_button import ImageButton
 
 class VideoButton(ImageButton):
 
-    def __init__(self, videopath, canvas, size, position):
+    def __init__(self, videopath, canvas, size, position, offset):
         logo_path = Path(__file__).parents[1] / 'assets' / 'buttons' / 'video-logo.png'
-        super().__init__(canvas, logo_path, size, position)
+        super().__init__(canvas, logo_path, size, position, offset)
         self.videopath = videopath
         self.process = None
 
-    def on_click(self, event):
+    def on_highlighted(self):
+        super().on_highlighted()
+        manager.emit('show_text', self.videopath.name)
+
+    def on_click(self):
 
         def quit():
             """Callback to quit VLC"""

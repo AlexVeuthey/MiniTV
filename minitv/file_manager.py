@@ -10,4 +10,4 @@ def find_video_files():
     matches = []
     for ext in SUPPORTED_FILES:
         matches.extend(drives_path.rglob(f'*.{ext}'))
-    return matches
+    return sorted(matches)

@@ -6,12 +6,17 @@ from minitv.image_button import ImageButton
 
 class ChromeButton(ImageButton):
 
-    def __init__(self, url, canvas, filename, size, position):
-        super().__init__(canvas, filename, size, position)
+    def __init__(self, url, canvas, filename, size, position, offset):
+        super().__init__(canvas, filename, size, position, offset)
         self.url = url
         self.driver = None
+        
+         
+    def on_highlighted(self):
+        super().on_highlighted()
+        manager.emit('hide_text')
 
-    def on_click(self, event):
+    def on_click(self):
         """Method callback for button click"""
 
         def quit():
