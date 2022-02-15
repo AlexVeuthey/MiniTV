@@ -1,11 +1,18 @@
+from os import unlink
 import subprocess
 import threading
 from pathlib import Path
 from time import sleep
+import shlex
+import os
+from tkinter import Tk
+from minitv.utils import open_inactive_image, open_resize_image
+from PIL import ImageTk
 
 from minitv.event_manager import manager
 from minitv.image_button import ImageButton
 
+from ffmpy import FFmpeg
 
 class VideoButton(ImageButton):
 
@@ -14,6 +21,35 @@ class VideoButton(ImageButton):
         super().__init__(canvas, logo_path, size, position, offset)
         self.videopath = videopath
         self.process = None
+        self.thumb = None
+        self.thumbImg = None
+        self.thumbImgInactive = None
+        
+        manager.add_handler('thumb_loaded', self.on_thumb_loaded)
+        manager.emit('load_thumbnail', videopath, size)
+
+    def on_thumb_loaded(self, videopath):
+        if videopath == self.videopath:
+            self.thumbImgInactive = ImageTk.PhotoImage(open_inactive_image(f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
+            self.thumbImg = ImageTk.PhotoImage(open_resize_image(f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
+            self.thumb = self.canvas.create_image(self.pixelPosition[0], self.pixelPosition[1]+44, image=self.thumbImgInactive, anchor="nw")                
+            unlink(f"{self.videopath}.jpg")
+     
+        
+    def on_position_changed(self, position):
+        super().on_position_changed(position)
+
+        if self.active:
+            if self.thumb:
+                self.canvas.itemconfig(self.thumb, image=self.thumbImg)
+        else:
+            if self.thumb:
+                self.canvas.itemconfig(self.thumb, image=self.thumbImgInactive)
+        
+    def move(self, scroll):
+        super().move(scroll)
+        if self.thumb:
+            self.canvas.moveto(self.thumb, self.pixelPosition[0], self.pixelPosition[1]+44)
 
     def on_highlighted(self):
         super().on_highlighted()

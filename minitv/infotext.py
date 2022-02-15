@@ -21,7 +21,7 @@ class Infotext:
         self.hide()
             
         self.rectangle = self.canvas.create_rectangle(self.position[0], self.position[1], self.size[0], self.size[1], fill='black')
-        self.text = self.canvas.create_text(self.position[0]+20, self.position[1]+20, text=text, anchor="nw", fill='white',font=('Helvetica','30','bold'))
+        self.text = self.canvas.create_text(self.position[0]+25, self.position[1]+25, text=text, anchor="nw", fill='white',font=('Helvetica','40','bold'))
         self.visible = True
 
     def hide(self):

@@ -7,7 +7,7 @@ from pynput import keyboard
 
 from minitv.button_grid import ButtonGrid
 from minitv.event_manager import manager
-from minitv.file_manager import check_new_drives
+from minitv.file_manager import check_new_drives, check_new_thumbnails
 
 
 def on_press(key):
@@ -67,6 +67,12 @@ def main():
     # start new media
     media_observer = threading.Thread(target=check_new_drives, daemon=True)
     media_observer.start()
+    
+    # listen for new thumbs to load
+    
+    # start new media
+    thumb_observer = threading.Thread(target=check_new_thumbnails, daemon=True)
+    thumb_observer.start()
 
     window.mainloop()
 

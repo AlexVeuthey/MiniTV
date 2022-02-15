@@ -17,9 +17,9 @@ def open_nothover_image(filepath, size):
 
     return new_im
 
-def open_inactive_image(filepath, size):
+def open_inactive_image(filepath, size, reduce=(40, 40)):
     img = Image.open(filepath)
-    img = img.resize((size[0]-40, size[1]-40), Image.ANTIALIAS)
+    img = img.resize((size[0]-reduce[0], size[1]-reduce[1]), Image.ANTIALIAS)
     new_im = Image.new("RGBA", size, (0, 0, 0, 0))
     new_im.paste(img, (20, 20))
     

@@ -30,7 +30,7 @@ class ButtonGrid(tk.Canvas):
         self.init_buttons(width, height, columns, buttons_config)
         self.spinner = Spinner(self, [width // 2, height // 2])
 
-        self.infotext = Infotext(self, (0, height - 80), [width, height])
+        self.infotext = Infotext(self, (0, height - 100), [width, height])
 
         manager.add_handler('move', self.on_move)
         manager.add_handler('new_media_found', self.reset_buttons)
