@@ -20,7 +20,11 @@ class ButtonGrid(tk.Canvas):
         self.n_items = 0
         self.current_col = 0
         self.current_row = 0
+        self.scroll_row = 0
+        self.width = width
+        self.height = height
         self.columns = columns
+        self.buttons_config = buttons_config
         self.bg_img = ImageTk.PhotoImage(Image.open('minitv/assets/images/background.jpg'))
         self.create_image(0, 0, image=self.bg_img, anchor=tk.NW)
         self.init_buttons(width, height, columns, buttons_config)
@@ -28,17 +32,28 @@ class ButtonGrid(tk.Canvas):
 
         self.infotext = Infotext(self, (0, height - 80), [width, height])
 
-        manager.emit('grid_position', (self.current_col, self.current_row))
         manager.add_handler('move', self.on_move)
-        manager.add_handler('on_mouse_enter_grid_item', self.on_mouse_move)
+        manager.add_handler('new_media_found', self.reset_buttons)
 
     def move_buttons(self, offset):
+        print(f"move buttons {offset}")
         for button in self.buttons:
             button.move(offset)
 
-    def on_mouse_move(self, position):
+    def change_grid_position(self, position):
         self.current_col = position[0]
         self.current_row = position[1]
+
+        window_size = 2
+
+        if self.current_row > self.scroll_row + window_size - 1:
+            self.scroll_row += 1
+            self.move_buttons(self.scroll_row)
+
+        if self.current_row < self.scroll_row:
+            self.scroll_row -= 1
+            self.move_buttons(self.scroll_row)
+
         manager.emit('grid_position', (self.current_col, self.current_row))
 
     def on_move(self, delta):
@@ -46,7 +61,10 @@ class ButtonGrid(tk.Canvas):
         delta_col, delta_row = delta
         new_col = self.current_col + delta_col
         new_row = self.current_row + delta_row
-        max_row = (self.n_items // self.columns) - 1
+        max_row = self.n_items // self.columns
+        # add 1 to max_row if incomplete row exists, which wasn't counted by above line
+        if self.n_items % self.columns > 0:
+            max_row += 1
         # move left when at left-most position
         if new_col < 0:
             if self.current_row > 0:
@@ -63,12 +81,20 @@ class ButtonGrid(tk.Canvas):
                 self.current_row += 1
             else:
                 print(f"No next row to loop-forward to {log_str}")
+        elif new_row == max_row and new_col > (self.n_items % self.columns):
+            print(f"No item to go to in incomplete row {log_str}")
         elif 0 <= new_row <= max_row:
             self.current_col = new_col
             self.current_row = new_row
         else:
             print(f"Move is invalid {log_str}")
-        manager.emit('grid_position', (self.current_col, self.current_row))
+        self.change_grid_position((self.current_col, self.current_row))
+
+    def reset_buttons(self):
+        for button in self.buttons:
+            button.destroy()
+        self.buttons = []
+        self.init_buttons(self.width, self.height, self.columns, self.buttons_config)
 
     def init_buttons(self, width, height, columns, buttons_config):
         # setup button sizes
@@ -76,10 +102,12 @@ class ButtonGrid(tk.Canvas):
         self.offset_x = (width - (button_size[0] * 4)) / 2
         self.offset_y = 50
 
+        i = 0
         for i, button_name in enumerate(buttons_config):
             params = buttons_config[button_name]
             self.setup_button(params, button_size, i // columns, i % columns)
 
+        j = 0
         for j, video_path in enumerate(find_video_files()):
             self.setup_button({
                 'button_type': 'video',
@@ -87,6 +115,8 @@ class ButtonGrid(tk.Canvas):
             }, button_size, (i + j + 1) // columns, (i + j + 1) % columns)
 
         self.n_items = i + j + 1
+
+        self.change_grid_position((self.current_col, self.current_row))
 
     def setup_button(self, params, size, row, column):
         if params['button_type'] == 'website':

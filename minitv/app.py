@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 
 import alsaaudio
@@ -6,6 +7,7 @@ from pynput import keyboard
 
 from minitv.button_grid import ButtonGrid
 from minitv.event_manager import manager
+from minitv.file_manager import check_new_drives
 
 
 def on_press(key):
@@ -49,6 +51,7 @@ def main():
     # main window
     window = tk.Tk()
     window.attributes('-fullscreen', True)
+    window.config(cursor='none')
 
     # setup button grid
     with open('buttons.yml', 'r') as fid:
@@ -59,8 +62,11 @@ def main():
     # start keyboard listener thread
     listener = keyboard.Listener(on_press=on_press,
                                  on_release=on_release)
-
     listener.start()
+
+    # start new media
+    media_observer = threading.Thread(target=check_new_drives, daemon=True)
+    media_observer.start()
 
     window.mainloop()
 
