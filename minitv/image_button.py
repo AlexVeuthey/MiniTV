@@ -37,8 +37,6 @@ class ImageButton(abc.ABC):
             self.pixelPosition[0], self.pixelPosition[1], image=self.imgNormal, anchor=tk.NW)
 
         self.canvas = canvas
-        self.canvas.tag_bind(self.image, '<Button-1>', self.on_mouse_click)
-
         self.active = False
 
         manager.add_handler("grid_position", self.on_position_changed)
@@ -53,9 +51,6 @@ class ImageButton(abc.ABC):
         manager.remove_handler("grid_position", self.on_position_changed)
         manager.remove_handler("proceed", self.on_proceed)
         self.canvas.delete(self.image)
-
-    def on_mouse_click(self, event):
-        self.on_click()
 
     def on_proceed(self):
         if (self.active):

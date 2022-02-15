@@ -4,22 +4,13 @@ import os
 import subprocess
 import shlex
 from minitv.event_manager import manager
+from minitv.app_state import app_state
 
 SUPPORTED_FILES = ['3gp', 'a52', 'dts', 'aac', 'flac', 'dv', 'vid', 'asf', 'wmv', 'asf', 'wmv', 'au', 'avi', 'flv',
                    'mkv', 'mka', 'mov', 'mp4', 'mpg', 'mp3', 'mp2', 'nsc', 'nsv', 'nut', 'ogm', 'ogg', 'ra', 'ram',
                    'rm', 'rv', 'rmbv', 'ts', 'mpg', 'tta', 'tac', 'ty', 'wav', 'dts', 'xa']
 
-polling_is_active = True
 
-
-def set_polling_active():
-    global polling_is_active
-    polling_is_active = True
-
-
-def set_polling_inactive():
-    global polling_is_active
-    polling_is_active = False
     
 
 thumbQueue = []
@@ -32,7 +23,7 @@ def load_thumbnail(videopath, size):
 def check_new_thumbnails():
     while True:
         sleep(0.1)
-        if polling_is_active:
+        if app_state.in_app:
             if (len(thumbQueue) > 0):
                 (videopath, size) = thumbQueue.pop(0)
                 
@@ -40,12 +31,9 @@ def check_new_thumbnails():
                     os.unlink(f"{videopath}.jpg")
     
   
-                process = subprocess.call(shlex.split(f"ffmpeg -ss 00:03:00 -i {videopath} -s {size[0]}x{size[1]} -frames:v 1 {videopath}.jpg"))
+                process = subprocess.call(shlex.split(f"ffmpeg -ss 00:00:30 -i {videopath} -s {size[0]}x{size[1]} -frames:v 1 {videopath}.jpg"))
                 manager.emit('thumb_loaded', videopath)
             
-
-manager.add_handler('proceed', set_polling_inactive)
-manager.add_handler('quit', set_polling_active)
 
 
 manager.add_handler('load_thumbnail', load_thumbnail)
@@ -67,7 +55,7 @@ def check_new_drives():
         current_content.extend(sorted(child.iterdir())[0].name)
     while True:
         sleep(3)
-        if polling_is_active:
+        if app_state.in_app:
             new_content = []
             for child in drives_path.iterdir():
                 new_content.extend(sorted(child.iterdir())[0].name)
