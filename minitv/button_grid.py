@@ -1,13 +1,14 @@
+import math
 import tkinter as tk
 from pathlib import Path
 
 from PIL import Image, ImageTk
 
 from minitv.buttons import chrome_button, video_button
-from minitv.spinner import Spinner
-from minitv.infotext import Infotext
 from minitv.event_manager import manager
 from minitv.file_manager import find_video_files
+from minitv.infotext import Infotext
+from minitv.spinner import Spinner
 
 
 class ButtonGrid(tk.Canvas):
@@ -17,7 +18,7 @@ class ButtonGrid(tk.Canvas):
         self.logo_folder = Path(__file__).parent / 'assets' / 'buttons'
         self.place(x=0, y=0)
         self.buttons = []
-        self.n_items = 0
+        self.max_item_idx = -1
         self.current_col = 0
         self.current_row = 0
         self.scroll_row = 0
@@ -61,10 +62,7 @@ class ButtonGrid(tk.Canvas):
         delta_col, delta_row = delta
         new_col = self.current_col + delta_col
         new_row = self.current_row + delta_row
-        max_row = self.n_items // self.columns
-        # add 1 to max_row if incomplete row exists, which wasn't counted by above line
-        if self.n_items % self.columns > 0:
-            max_row += 1
+        max_row = math.floor(self.max_item_idx / self.columns)
         # move left when at left-most position
         if new_col < 0:
             if self.current_row > 0:
@@ -81,7 +79,7 @@ class ButtonGrid(tk.Canvas):
                 self.current_row += 1
             else:
                 print(f"No next row to loop-forward to {log_str}")
-        elif new_row == max_row and new_col > (self.n_items % self.columns):
+        elif new_row == max_row and new_col > (self.max_item_idx % self.columns):
             print(f"No item to go to in incomplete row {log_str}")
         elif 0 <= new_row <= max_row:
             self.current_col = new_col
@@ -114,7 +112,7 @@ class ButtonGrid(tk.Canvas):
                 'videopath': video_path
             }, button_size, (i + j + 1) // columns, (i + j + 1) % columns)
 
-        self.n_items = i + j + 1
+        self.max_item_idx = i + j
 
         self.change_grid_position((self.current_col, self.current_row))
 
