@@ -9,8 +9,11 @@ class EventManager:
         print(f"Added handler {handler}")
 
     def remove_handler(self, event_name, handler):
-        self._handlers[event_name].remove(handler)
-        print(f"Removed handler {handler}")
+        if event_name in self._handlers:
+            self._handlers[event_name].remove(handler)
+            print(f"Removed handler {handler}")
+        else:
+            print(f"Handler {handler} was not in list")
 
     def emit(self, event_name, *args):
         if event_name in self._handlers:

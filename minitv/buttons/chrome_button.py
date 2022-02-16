@@ -18,11 +18,12 @@ class ChromeButton(ImageButton):
 
     def quit(self):
         """Callback to quit Chromium"""
-        super().quit()
         print('Quitting Chromium')
+        manager.remove_handler('quit', self.quit)
+        super().quit()
         if self.driver is not None:
             self.driver.quit()
-        manager.remove_handler('quit', self.quit)
+            self.driver = None
 
     def on_click(self):
         """Method callback for button click"""
@@ -48,8 +49,10 @@ class ChromeButton(ImageButton):
                 except Exception:
                     break
                 sleep(1)
-            print("Quitting after processed ended")
-            manager.emit('quit')
+            if self.driver is not None:
+                print("Quitting after process ended")
+                self.driver = None
+                manager.emit('quit')
 
         manager.add_handler('quit', self.quit)
         x = threading.Thread(target=start_browser, daemon=True)

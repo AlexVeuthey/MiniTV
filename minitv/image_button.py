@@ -16,8 +16,8 @@ sound.set_volume(0.15)
 confirm = mixer.Sound('minitv/assets/sounds/confirm.wav')
 confirm.set_volume(0.15)
 
-quit = mixer.Sound('minitv/assets/sounds/quit.wav')
-quit.set_volume(0.15)
+quit_sound = mixer.Sound('minitv/assets/sounds/quit.wav')
+quit_sound.set_volume(0.15)
 
 
 class ImageButton(abc.ABC):
@@ -76,7 +76,7 @@ class ImageButton(abc.ABC):
         pass
 
     def quit(self):
-        quit.play()
+        quit_sound.play()
 
     @abc.abstractmethod
     def on_click(self):
