@@ -1,18 +1,14 @@
-from os import unlink
 import subprocess
 import threading
+from os import unlink
 from pathlib import Path
 from time import sleep
-import shlex
-import os
-from tkinter import Tk
-from minitv.utils import open_inactive_image, open_resize_image
-from PIL import ImageTk
 
 from minitv.event_manager import manager
 from minitv.image_button import ImageButton
+from minitv.utils import open_inactive_image, open_resize_image
+from PIL import ImageTk
 
-from ffmpy import FFmpeg
 
 class VideoButton(ImageButton):
 
@@ -24,18 +20,20 @@ class VideoButton(ImageButton):
         self.thumb = None
         self.thumbImg = None
         self.thumbImgInactive = None
-        
+
         manager.add_handler('thumb_loaded', self.on_thumb_loaded)
         manager.emit('load_thumbnail', videopath, size)
 
     def on_thumb_loaded(self, videopath):
         if videopath == self.videopath:
-            self.thumbImgInactive = ImageTk.PhotoImage(open_inactive_image(f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
-            self.thumbImg = ImageTk.PhotoImage(open_resize_image(f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
-            self.thumb = self.canvas.create_image(self.pixelPosition[0], self.pixelPosition[1]+44, image=self.thumbImgInactive, anchor="nw")                
+            self.thumbImgInactive = ImageTk.PhotoImage(open_inactive_image(
+                f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
+            self.thumbImg = ImageTk.PhotoImage(open_resize_image(
+                f"{self.videopath}.jpg", (self.size[0], self.size[1]-88)))
+            self.thumb = self.canvas.create_image(
+                self.pixelPosition[0], self.pixelPosition[1]+44, image=self.thumbImgInactive, anchor="nw")
             unlink(f"{self.videopath}.jpg")
-     
-        
+
     def on_position_changed(self, position):
         super().on_position_changed(position)
 
@@ -45,7 +43,7 @@ class VideoButton(ImageButton):
         else:
             if self.thumb:
                 self.canvas.itemconfig(self.thumb, image=self.thumbImgInactive)
-        
+
     def move(self, scroll):
         super().move(scroll)
         if self.thumb:
@@ -54,7 +52,7 @@ class VideoButton(ImageButton):
     def on_highlighted(self):
         super().on_highlighted()
         manager.emit('show_text', self.videopath.name)
-        
+
     def quit(self):
         super().quit()
         """Callback to quit VLC"""
@@ -63,10 +61,8 @@ class VideoButton(ImageButton):
             self.process.kill()
         manager.remove_handler('quit', self.quit)
 
-
     def on_click(self):
 
-       
         manager.emit('show_spinner')
 
         def start_video():

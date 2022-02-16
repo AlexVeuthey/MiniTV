@@ -5,16 +5,16 @@ import alsaaudio
 import yaml
 from pynput import keyboard
 
+from minitv.app_state import app_state
 from minitv.button_grid import ButtonGrid
 from minitv.event_manager import manager
 from minitv.file_manager import check_new_drives, check_new_thumbnails
-from minitv.app_state import app_state
 
 
 def on_press(key):
-    
+
     if app_state.in_app:
-    # catch special keys first
+        # catch special keys first
         if key == keyboard.Key.enter:
             print("Caught enter key")
             manager.emit('proceed')
@@ -30,11 +30,11 @@ def on_press(key):
         if key == keyboard.Key.right:
             print("Caught right key")
             manager.emit('move', (1, 0))
-            
+
     if key == keyboard.Key.esc:
         print("Caught escape key")
         manager.emit('quit')
-            
+
     # special catch for home key
     try:
         if key.vk == 269025048:
@@ -72,9 +72,9 @@ def main():
     # start new media
     media_observer = threading.Thread(target=check_new_drives, daemon=True)
     media_observer.start()
-    
+
     # listen for new thumbs to load
-    
+
     # start new media
     thumb_observer = threading.Thread(target=check_new_thumbnails, daemon=True)
     thumb_observer.start()

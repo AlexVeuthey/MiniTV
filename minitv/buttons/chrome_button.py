@@ -14,7 +14,7 @@ class ChromeButton(ImageButton):
     def on_highlighted(self):
         super().on_highlighted()
         manager.emit('hide_text')
-        
+
     def quit(self):
         super().quit()
         """Callback to quit the Chrome driver"""

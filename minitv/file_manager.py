@@ -1,20 +1,20 @@
+import os
+import shlex
+import subprocess
 from pathlib import Path
 from time import sleep
-import os
-import subprocess
-import shlex
-from minitv.event_manager import manager
+
 from minitv.app_state import app_state
+from minitv.event_manager import manager
 
 SUPPORTED_FILES = ['3gp', 'a52', 'dts', 'aac', 'flac', 'dv', 'vid', 'asf', 'wmv', 'asf', 'wmv', 'au', 'avi', 'flv',
                    'mkv', 'mka', 'mov', 'mp4', 'mpg', 'mp3', 'mp2', 'nsc', 'nsv', 'nut', 'ogm', 'ogg', 'ra', 'ram',
                    'rm', 'rv', 'rmbv', 'ts', 'mpg', 'tta', 'tac', 'ty', 'wav', 'dts', 'xa']
 
 
-    
-
 thumbQueue = []
-    
+
+
 def load_thumbnail(videopath, size):
     thumbQueue.append((videopath, size))
     pass
@@ -26,18 +26,16 @@ def check_new_thumbnails():
         if app_state.in_app:
             if (len(thumbQueue) > 0):
                 (videopath, size) = thumbQueue.pop(0)
-                
+
                 if (os.path.isfile(f"{videopath}.jpg")):
                     os.unlink(f"{videopath}.jpg")
-    
-  
-                process = subprocess.call(shlex.split(f"ffmpeg -ss 00:00:30 -i {videopath} -s {size[0]}x{size[1]} -frames:v 1 {videopath}.jpg"))
+
+                process = subprocess.call(shlex.split(
+                    f"ffmpeg -ss 00:00:30 -i {videopath} -s {size[0]}x{size[1]} -frames:v 1 {videopath}.jpg"))
                 manager.emit('thumb_loaded', videopath)
-            
 
 
 manager.add_handler('load_thumbnail', load_thumbnail)
-
 
 
 def find_video_files():

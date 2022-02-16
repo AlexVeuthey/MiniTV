@@ -1,14 +1,14 @@
 import abc
-from pickle import NONE
 import tkinter as tk
-from turtle import shapesize
 
 from PIL import ImageTk
-
 from pygame import mixer
-mixer.init()
+
 from minitv.event_manager import manager
-from minitv.utils import open_nothover_image, open_resize_image, open_inactive_image
+from minitv.utils import (open_inactive_image, open_nothover_image,
+                          open_resize_image)
+
+mixer.init()
 
 sound = mixer.Sound('minitv/assets/sounds/clic.wav')
 sound.set_volume(0.15)
@@ -18,6 +18,7 @@ confirm.set_volume(0.15)
 
 quit = mixer.Sound('minitv/assets/sounds/quit.wav')
 quit.set_volume(0.15)
+
 
 class ImageButton(abc.ABC):
 
@@ -73,7 +74,7 @@ class ImageButton(abc.ABC):
     def on_highlighted(self):
         sound.play()
         pass
-    
+
     def quit(self):
         quit.play()
 

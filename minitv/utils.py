@@ -1,4 +1,4 @@
-from PIL import Image,ImageEnhance
+from PIL import Image, ImageEnhance
 
 
 def open_resize_image(filepath, size):
@@ -17,12 +17,13 @@ def open_nothover_image(filepath, size):
 
     return new_im
 
+
 def open_inactive_image(filepath, size, reduce=(40, 40)):
     img = Image.open(filepath)
     img = img.resize((size[0]-reduce[0], size[1]-reduce[1]), Image.ANTIALIAS)
     new_im = Image.new("RGBA", size, (0, 0, 0, 0))
     new_im.paste(img, (20, 20))
-    
+
     enhancer = ImageEnhance.Brightness(new_im)
     new_im = enhancer.enhance(0.75)
 
