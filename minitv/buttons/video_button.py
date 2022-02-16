@@ -24,6 +24,11 @@ class VideoButton(ImageButton):
         manager.add_handler('thumb_loaded', self.on_thumb_loaded)
         manager.emit('load_thumbnail', videopath, size)
 
+    def destroy(self):
+        super().destroy()
+        manager.remove_handler('thumb_loaded', self.on_thumb_loaded)
+        self.canvas.delete(self.thumb)
+
     def on_thumb_loaded(self, videopath):
         if videopath == self.videopath:
             self.thumbImgInactive = ImageTk.PhotoImage(open_inactive_image(
