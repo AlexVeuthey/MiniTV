@@ -31,10 +31,6 @@ def on_press(key):
             print("Caught right key")
             manager.emit('move', (1, 0))
 
-    if key == keyboard.Key.esc:
-        print("Caught escape key")
-        manager.emit('quit')
-
     # special catch for home key
     try:
         if key.vk == 269025048:

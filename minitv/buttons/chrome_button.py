@@ -1,4 +1,5 @@
 import threading
+from time import sleep
 
 from minitv.event_manager import manager
 from minitv.image_button import ImageButton
@@ -16,19 +17,19 @@ class ChromeButton(ImageButton):
         manager.emit('hide_text')
 
     def quit(self):
+        """Callback to quit Chromium"""
         super().quit()
-        """Callback to quit the Chrome driver"""
-        print("Quitting driver")
+        print('Quitting Chromium')
         if self.driver is not None:
             self.driver.quit()
-            manager.remove_handler('quit', self.quit)
+        manager.remove_handler('quit', self.quit)
 
     def on_click(self):
         """Method callback for button click"""
 
         manager.emit('show_spinner')
 
-        def start_website():
+        def start_browser():
             """Function for starting web browsing, to be used in thread"""
             from selenium import webdriver
             opt = webdriver.ChromeOptions()
@@ -38,11 +39,18 @@ class ChromeButton(ImageButton):
             # remove flag warning about automation
             opt.add_experimental_option('excludeSwitches', ['enable-automation'])
             # start driver, keep a copy to prevent garbage collection
-            driver = webdriver.Chrome(chrome_options=opt)
-            self.driver = driver
-            manager.add_handler('quit', self.quit)
+            self.driver = webdriver.Chrome(chrome_options=opt)
             manager.emit('hide_spinner')
             self.driver.get(self.url)
+            while self.driver is not None:
+                try:
+                    self.driver.current_url
+                except Exception:
+                    break
+                sleep(1)
+            print("Quitting after processed ended")
+            manager.emit('quit')
 
-        x = threading.Thread(target=start_website, daemon=True)
+        manager.add_handler('quit', self.quit)
+        x = threading.Thread(target=start_browser, daemon=True)
         x.start()

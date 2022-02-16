@@ -59,11 +59,12 @@ class VideoButton(ImageButton):
         manager.emit('show_text', self.videopath.name)
 
     def quit(self):
-        super().quit()
         """Callback to quit VLC"""
-        print('Quitting driver')
+        super().quit()
+        print('Quitting VLC')
         if self.process is not None:
             self.process.kill()
+            self.process.join()
         manager.remove_handler('quit', self.quit)
 
     def on_click(self):
